@@ -1,16 +1,4 @@
-from google.protobuf.internal.decoder import _DecodeVarint32
-from google.protobuf.internal.encoder import _VarintBytes
 from message import *
-
-
-def encode_varint(msg):
-    return _VarintBytes(msg.ByteSize())
-
-def decode_varint(buf, pos):
-    msg_size, new_pos = _DecodeVarint32(buf, pos)
-    return msg_size, new_pos
-
-
 
 if __name__ == '__main__':
     with open('out.bin', 'wb') as f:

@@ -45,22 +45,3 @@ def parseDelimited(data, size, bytesConsumed = 0):
     msg.ParseFromString(buff[new_pos:new_pos + bytesConsumed])
     return msg
 
-
-
-if __name__ == '__main__':
-    with open('out.bin', 'wb') as f:
-        msg = request_for_slow_response(1294819)
-        header_size = encode_varint(msg)
-        msg_bytes = msg.SerializeToString()
-        package = header_size + msg_bytes
-        f.write(package)
-
-    with open('out.bin', 'rb') as f:
-        buff = f.read()
-        msg_size, new_pos = decode_varint(buff, 0)
-        print(parseDelimited(buff, len(buff), msg_size))
-
-
-
-
-
