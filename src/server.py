@@ -27,21 +27,24 @@ async def handle_connection(reader, writer):
             break
         msg = get_message_from_buff(buf)
 
-        logger.info(f"Received:\n {msg}from: {addr}")
+        logger.info(f"\nReceived:\n{msg}from: {addr}")
 
         if msg.HasField('request_for_fast_response'):
-            response = fast_response(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+            now = datetime.now()
+            response = fast_response(now.strftime("%Y%m%dT%H%M%S.%f")[:-3])
         elif msg.HasField('request_for_slow_response'):
             milliseconds = msg.request_for_slow_response.time_in_seconds_to_sleep
             await asyncio.sleep(milliseconds / 1000)
             response = slow_response(len(users))
 
         try:
-            writer.write(encode_varint(response) + response.SerializeToString())  # New
+            package = encode_varint(response) + response.SerializeToString()
+            writer.write(package)  # New
             await writer.drain()
         except ConnectionError:
             logger.info(f"Client suddenly closed, cannot send")
             break
+
     users.remove((reader, writer))
     writer.close()
     logger.info(f"Disconnected by {addr}")
