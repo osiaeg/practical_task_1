@@ -11,7 +11,7 @@ from config import HOST, PORT
 from message import *
 
 users = []
-logger.add("file_{time}.log")
+# logger.add("file_{time}.log")
 
 
 async def handle_connection(reader, writer):
@@ -25,30 +25,19 @@ async def handle_connection(reader, writer):
         except ConnectionError:
             logger.info(f"Client suddenly closed while receiving from {addr}")
             break
-        logger.info(f"Received {data} from: {addr}")
-        msg_size, new_pos = decode_varint(data, 0)
-        msg_buf = buf[new_pos:new_pos + msg_size]
-        msg = wm.WrapperMessage()
-        msg.ParseFromString(msg_buf)
-        logger.info(f"Received {msg} from: {addr}")
+        msg = get_message_from_buff(buf)
 
+        logger.info(f"Received:\n {msg}from: {addr}")
 
-        if not data:
-            break
-        # Process
-        if data == b"close":
-            break
-        elif data == b'fast':
-            data = f"{datetime.now()}".encode()
-        elif data == b'slow':
-            await asyncio.sleep(30)
-            data = f'{len(users)}'.encode()
-        else:
-            data = data.upper()
-        # Send
-        logger.info(f"Send: {data} to: {addr}")
+        if msg.HasField('request_for_fast_response'):
+            response = fast_response(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+        elif msg.HasField('request_for_slow_response'):
+            milliseconds = msg.request_for_slow_response.time_in_seconds_to_sleep
+            await asyncio.sleep(milliseconds / 1000)
+            response = slow_response(len(users))
+
         try:
-            writer.write(data)  # New
+            writer.write(encode_varint(response) + response.SerializeToString())  # New
             await writer.drain()
         except ConnectionError:
             logger.info(f"Client suddenly closed, cannot send")

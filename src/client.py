@@ -17,7 +17,7 @@ from config import HOST, PORT
 from message import *
 
 
-IS_RECONNECT_ENABLED = False
+IS_RECONNECT_ENABLED = True
 
 
 if __name__ == "__main__":
@@ -37,14 +37,15 @@ if __name__ == "__main__":
                 elif data == 'fast':
                     data_bytes = request_for_fast_response()
                 elif 'slow' in data:
-                    data = data.replace('slow', '')
-                    data_bytes = request_for_slow_response(int(data))
+                    milliseconds = data.replace('slow', '')
+                    milliseconds = int(milliseconds) if milliseconds else 0
+                    data_bytes = request_for_slow_response(milliseconds)
                 # Send
                 sock.sendall(encode_varint(data_bytes) + data_bytes.SerializeToString())
                 # Receive
                 data_bytes = sock.recv(1024)
-                data = data_bytes.decode()
-                print("Received:", repr(data))
+                msg = get_message_from_buff(data_bytes)
+                print(repr(msg))
                 if not data:
                     print("Closed by server")
                     break
