@@ -1,6 +1,35 @@
 import wrappermessage_pb2 as wm
 from google.protobuf.internal.decoder import _DecodeVarint32
 from google.protobuf.internal.encoder import _VarintBytes
+from google.protobuf.message import DecodeError
+
+class DelimitedMessagesStreamParser:
+    def parse(self, data) -> list:
+        messages = list()
+
+        start = 0
+
+        while start < len(data):
+            message_size, pos = decode_varint(data, start)
+            msg = wm.WrapperMessage()
+            try:
+                msg.ParseFromString(data[pos:pos + message_size])
+                messages.append(msg)
+            except DecodeError:
+                print('Decoding faild.')
+            start += pos + message_size
+
+        return messages
+
+    def _parseDelimited(self, data, start = 0):
+        message_size, pos = decode_varint(data, start)
+        msg = wm.WrapperMessage()
+        try:
+            msg.ParseFromString(data[pos:pos + message_size])
+        except DecodeError:
+            print('Decoding faild.')
+            return None
+        return msg
 
 
 def encode_varint(msg: wm.WrapperMessage) -> bytes:
@@ -53,9 +82,3 @@ def get_message_from_buff(buf) -> wm.WrapperMessage:
     msg.ParseFromString(msg_buf)
     return msg
 
-
-def parseDelimited(data, size, bytesConsumed=0):
-    msg_size, new_pos = decode_varint(buff, 0)
-    msg = wm.WrapperMessage()
-    msg.ParseFromString(buff[new_pos:new_pos + bytesConsumed])
-    return msg
