@@ -13,8 +13,9 @@ message_list = [
         ]
 
 for message in message_list:
+    print(message.SerializeToString())
     messages.write(message.SerializeToString())
 
-print(messages.read())
+print(messages.getvalue())
 
 
