@@ -1,8 +1,9 @@
+import protobuf_parser
 from setuptools import setup
 
 setup(
     name='protobuf_parser',
-    version='1.0.0',
+    version=protobuf_parser.__version__,
     author='R&EC SPb ETU',
     author_email='info@nicetu.spb.ru',
     url='http://nicetu.spb.ru',
