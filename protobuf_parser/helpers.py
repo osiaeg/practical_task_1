@@ -1,6 +1,8 @@
 from .wrappermessage_pb2 import *
 from google.protobuf.internal.decoder import _DecodeVarint32
 from google.protobuf.internal.encoder import _VarintBytes
+from google.protobuf.message import DecodeError
+import io
 
 
 def encode_varint(msg: WrapperMessage) -> bytes:
@@ -13,11 +15,23 @@ def decode_varint(buf: bytes, pos: int) -> tuple[int, int]:
 
 
 def serialize_delimited(msg):
-    return b""
+    return encode_varint(msg) + msg.SerializeToString()
 
 
-def parse_delimited(data: bytes, size: int):
-    pass
+def parse_delimited(data: io.BytesIO, size: int):
+    if size == 1:
+        return None
+
+    message = WrapperMessage()
+    data_bytes = data.getbuffer()
+    msg_size, new_pos = decode_varint(data.getvalue(), 0)
+
+    try:
+        message.ParseFromString(data_bytes[new_pos : new_pos + msg_size])
+    except DecodeError:
+        message = None
+
+    return message
 
 
 def fast_response(date: str) -> WrapperMessage :
