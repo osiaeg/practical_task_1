@@ -2,10 +2,11 @@ from .wrappermessage_pb2 import *
 from google.protobuf.internal.decoder import _DecodeVarint32
 from google.protobuf.internal.encoder import _VarintBytes
 from google.protobuf.message import DecodeError
+from typing import Any
 import io
 
 
-def encode_varint(msg: WrapperMessage) -> bytes:
+def encode_varint(msg: Any) -> bytes:
     return _VarintBytes(msg.ByteSize())
 
 

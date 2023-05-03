@@ -29,6 +29,6 @@ with io.BytesIO() as messages:
     while messages.tell() < len(messages.getbuffer()):
         parsedMessages = parser.parse(messages.read(1))
 
-    for item in parsedMessages:
-        print(item)
+        for item in parsedMessages:
+            print(item)
 
