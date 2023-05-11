@@ -3,7 +3,7 @@ from .stream_parser import DelimitedMessagesStreamParser as Parser
 import io
 
 with io.BytesIO() as messages:
-    parser = Parser()
+    parser = Parser(WrapperMessage)
 
     message_list = [
             fast_response("alskdjf"),

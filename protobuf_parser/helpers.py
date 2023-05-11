@@ -1,9 +1,21 @@
 from .wrappermessage_pb2 import *
 from google.protobuf.internal.decoder import _DecodeVarint32
 from google.protobuf.internal.encoder import _VarintBytes
-from google.protobuf.message import DecodeError
+from google.protobuf.message import DecodeError, Message
 from typing import Any
+from functools import wraps
 import io
+
+
+def message_type(type_name):
+    def _wrapper(f):
+        @wraps(f)
+        def inner(*args, **kwargs):
+            global message
+            message = type_name()
+            f(*args, **kwargs)
+        return inner
+    return _wrapper
 
 
 def encode_varint(msg: Any) -> bytes:
@@ -19,11 +31,11 @@ def serialize_delimited(msg):
     return encode_varint(msg) + msg.SerializeToString()
 
 
-def parse_delimited(data: io.BytesIO, size: int):
+def parse_delimited(data: io.BytesIO, size: int, protocol):
     if size == 1:
         return None
 
-    message = WrapperMessage()
+    message = protocol()
     data_bytes = data.getbuffer()
     msg_size, new_pos = decode_varint(data.getvalue(), 0)
 
@@ -67,4 +79,5 @@ def request_for_slow_response(milliseconds: int) -> WrapperMessage :
     except ValueError:
         print(f'{milliseconds} out of range uint32')
         return WrapperMessage()
+
 
