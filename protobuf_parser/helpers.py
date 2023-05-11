@@ -7,17 +7,6 @@ from functools import wraps
 import io
 
 
-def message_type(type_name):
-    def _wrapper(f):
-        @wraps(f)
-        def inner(*args, **kwargs):
-            global message
-            message = type_name()
-            f(*args, **kwargs)
-        return inner
-    return _wrapper
-
-
 def encode_varint(msg: Any) -> bytes:
     return _VarintBytes(msg.ByteSize())
 
