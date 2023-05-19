@@ -23,11 +23,12 @@ with io.BytesIO() as messages:
         messages.write(serialized_message)
 
     print(messages.getvalue())
+    print(len(messages.getvalue()))
 
     print("Show deserialized messages form stream.")
     messages.seek(0)
     while messages.tell() < len(messages.getbuffer()):
-        parsedMessages = parser.parse(messages.read(1))
+        parsedMessages = parser.parse(messages.read(5))
 
         for item in parsedMessages:
             print(item)

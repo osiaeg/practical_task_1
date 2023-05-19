@@ -10,7 +10,8 @@ class DelimitedMessagesStreamParser:
     def parse(self, data):
         msg_list = list()
         for byte in data:
-            self._m_buffer.write(data)
+            bytes_int = byte.to_bytes(1, byteorder="big")
+            self._m_buffer.write(bytes_int)
             msg = parse_delimited(self._m_buffer, len(self._m_buffer.getbuffer()), self.protocol)
 
             if msg:
