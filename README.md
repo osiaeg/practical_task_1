@@ -8,3 +8,7 @@ py-protobuf
 protoc --proto_path=. --python_out=protobuf_parser wrappermessage.proto
 
 ```
+Запуск тестов
+```
+python -m unittest
+```

@@ -1,35 +1,29 @@
 from .helpers import *
-from .stream_parser import DelimitedMessagesStreamParser as Parser
-import io
+from .DelimitedMessagesStreamParser import DelimitedMessagesStreamParser
+from protobuf.message_pb2 import *
+from .messages import Messages
 
-with io.BytesIO() as messages:
-    parser = Parser(WrapperMessage)
+parser = DelimitedMessagesStreamParser(WrapperMessage)
 
-    message_list = [
-            fast_response("alskdjf"),
-            slow_response(20),
-            request_for_fast_response(),
-            request_for_slow_response(1000),
-            ]
-    print("Show test messages.")
+message_list = [
+        Messages.fast_response("alskdjf"),
+        Messages.slow_response(20),
+        Messages.request_for_fast_response(),
+        Messages.request_for_slow_response(1000),
+        ]
 
-    for message in message_list:
-        print(message)
+print("Show test messages.")
 
-    print("Show serialized stream with messages above.")
+for message in message_list:
+    print(message)
 
-    for message in message_list:
-        serialized_message = serialize_delimited(message)
-        messages.write(serialized_message)
+print("Show serialized stream with messages above.")
 
-    print(messages.getvalue())
-    print(len(messages.getvalue()))
+for message in message_list:
+    serialized_message = serialize_delimited(message)
+    print(serialized_message)
 
-    print("Show deserialized messages form stream.")
-    messages.seek(0)
-    while messages.tell() < len(messages.getbuffer()):
-        parsedMessages = parser.parse(messages.read(5))
+buffer = b''.join([serialize_delimited(message) for message in message_list])
+print(buffer)
 
-        for item in parsedMessages:
-            print(item)
 
