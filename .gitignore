@@ -9,7 +9,7 @@
 .DS_Store
 
 # Windows
-*_pb2.py
+# *_pb2.py
 Thumbs.db
 
 # Source for the following rules: https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
