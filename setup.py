@@ -4,11 +4,12 @@ from setuptools import setup
 setup(
     name='protobuf_parser',
     version=protobuf_parser.__version__,
-    author='R&EC SPb ETU',
-    author_email='info@nicetu.spb.ru',
-    url='http://nicetu.spb.ru',
+    author='Osia',
+    author_email='somemail@mail.ru',
+    url='http://googl.com',
     description='Разбор потока length-prefixed Protobuf сообщений на Python',
     long_description="",
     zip_safe=False,
     packages=['protobuf_parser'],
+    install_requires=['protobuf'],
 )

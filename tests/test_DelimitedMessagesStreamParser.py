@@ -5,6 +5,7 @@ from google.protobuf.internal.encoder import _VarintBytes
 
 import unittest
 
+
 class ParserTest(unittest.TestCase):
     def test_oneFastRequest(self):
         parser = DelimitedMessagesStreamParser(WrapperMessage)
@@ -235,4 +236,3 @@ class ParserTest(unittest.TestCase):
         corrupted += stream[len(data) + 1:]
         with self.assertRaises(ValueError):
             parser.parse(corrupted)
-

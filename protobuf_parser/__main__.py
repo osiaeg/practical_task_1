@@ -1,16 +1,14 @@
-from .helpers import *
 from .DelimitedMessagesStreamParser import DelimitedMessagesStreamParser
 from protobuf.message_pb2 import *
-from .messages import Messages
 
 parser = DelimitedMessagesStreamParser(WrapperMessage)
 
 message_list = [
-        Messages.fast_response("alskdjf"),
-        Messages.slow_response(20),
-        Messages.request_for_fast_response(),
-        Messages.request_for_slow_response(1000),
-        ]
+    WrapperMessage(request_for_fast_response=RequestForFastResponse()),
+    WrapperMessage(fast_response=FastResponse(current_date_time="aksdjfasdf")),
+    WrapperMessage(request_for_slow_response=RequestForSlowResponse(time_in_seconds_to_sleep=0)),
+    WrapperMessage(slow_response=SlowResponse(connected_client_count=0)),
+]
 
 print("Show test messages.")
 
@@ -18,12 +16,3 @@ for message in message_list:
     print(message)
 
 print("Show serialized stream with messages above.")
-
-for message in message_list:
-    serialized_message = serialize_delimited(message)
-    print(serialized_message)
-
-buffer = b''.join([serialize_delimited(message) for message in message_list])
-print(buffer)
-
-
